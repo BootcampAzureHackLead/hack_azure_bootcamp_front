@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#121316" />
+  <title>LUMERA · Panel Administrador</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Barra superior -->
+    <header class="admin-header">
+      <div class="header-left">
+        <a href="/" class="back-link" title="Volver a la tienda LUMERA">← Volver a la Tienda</a>
+        <div class="header-title-wrap">
+          <h1>LUMERA <span class="badge-role">ADMIN</span></h1>
+          <p class="header-sub">Monitoreo de APIs y Azure Blob Storage</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <label class="auto-refresh-label" title="Actualizar datos cada 10 segundos">
+          <input type="checkbox" id="autoRefreshCheck" checked />
+          <span>Auto-refresco (10s)</span>
+        </label>
+        <button id="refreshBtn" class="btn btn-primary" type="button">
+          <span class="refresh-icon" aria-hidden="true">↻</span> Actualizar ahora
+        </button>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <!-- Fila de estado principal -->
+      <section class="cards-grid">
+        <!-- Tarjeta: GET /health -->
+        <article class="status-card" id="cardHealth">
+          <div class="card-header">
+            <div>
+              <span class="endpoint-badge">GET /health</span>
+              <h2>Salud del Servidor</h2>
+            </div>
+            <span id="healthBadge" class="status-pill status-loading">Consultando...</span>
+          </div>
+
+          <div class="card-body">
+            <div class="metric-row">
+              <span class="metric-label">Estado HTTP:</span>
+              <strong id="healthHttpCode" class="metric-value">--</strong>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Latencia:</span>
+              <span id="healthLatency" class="metric-value">-- ms</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Última comprobación:</span>
+              <span id="healthLastCheck" class="metric-value">--</span>
+            </div>
+
+            <div class="code-preview-wrap">
+              <span class="code-label">Respuesta JSON:</span>
+              <pre><code id="healthJson">{ "cargando": true }</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <!-- Tarjeta: GET /api/promotion -->
+        <article class="status-card" id="cardPromotion">
+          <div class="card-header">
+            <div>
+              <span class="endpoint-badge">GET /api/promotion</span>
+              <h2>Promoción en Azure Blob</h2>
+            </div>
+            <span id="promotionBadge" class="status-pill status-loading">Consultando...</span>
+          </div>
+
+          <div class="card-body">
+            <div class="metric-row">
+              <span class="metric-label">Estado HTTP:</span>
+              <strong id="promotionHttpCode" class="metric-value">--</strong>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Latencia:</span>
+              <span id="promotionLatency" class="metric-value">-- ms</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Última lectura:</span>
+              <span id="promotionLastCheck" class="metric-value">--</span>
+            </div>
+
+            <div class="promotion-banner-preview">
+              <span class="preview-tag">Texto de promoción activo:</span>
+              <blockquote id="promotionTextPreview" class="promo-text-quote">
+                Cargando mensaje de Azure Blob Storage...
+              </blockquote>
+            </div>
+
+            <div class="code-preview-wrap">
+              <span class="code-label">Respuesta JSON:</span>
+              <pre><code id="promotionJson">{ "cargando": true }</code></pre>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Panel de herramientas y consola de pruebas -->
+      <section class="tools-section">
+        <div class="section-title-wrap">
+          <h2>Consola de Pruebas de Endpoints</h2>
+          <p>Ejecuta llamadas directas a las APIs para verificar los códigos de estado y payloads.</p>
+        </div>
+
+        <div class="test-buttons-bar">
+          <button type="button" class="btn btn-secondary" id="btnTestPromotion">
+            Probar <strong>GET /api/promotion</strong>
+          </button>
+          <button type="button" class="btn btn-secondary" id="btnTestHealth">
+            Probar <strong>GET /health</strong>
+          </button>
+          <button type="button" class="btn btn-outline" id="btnTestPromocionEs">
+            Probar GET /api/promocion (ES)
+          </button>
+          <button type="button" class="btn btn-outline" id="btnTestHealthEs">
+            Probar GET /api/health (ES)
+          </button>
+          <button type="button" class="btn btn-clear" id="btnClearLogs">
+            Limpiar registro
+          </button>
+        </div>
+
+        <div class="log-table-wrap">
+          <table class="log-table" aria-label="Historial de solicitudes">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Método</th>
+                <th>Endpoint</th>
+                <th>Código HTTP</th>
+                <th>Tiempo</th>
+                <th>Respuesta</th>
+              </tr>
+            </thead>
+            <tbody id="logTableBody">
+              <tr class="empty-log-row">
+                <td colspan="6">No hay solicitudes registradas aún. Haz clic en "Actualizar ahora" o prueba un endpoint.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Guía de referencia técnica para Azure -->
+      <section class="info-section">
+        <h3>Referencia de Integración Azure</h3>
+        <div class="info-grid">
+          <div class="info-box">
+            <h4>Endpoints Consumidos</h4>
+            <ul>
+              <li><code>GET /api/promotion</code>: Devuelve <code>200 {"message": "..."}</code> al leer <code>mensaje.txt</code> desde Azure Blob Storage con Managed Identity, o <code>503 {"error": "Promotion unavailable"}</code> si no está configurado o falla.</li>
+              <li><code>GET /health</code>: Devuelve <code>200 {"status": "ok"}</code> para validar la disponibilidad del servicio.</li>
+            </ul>
+          </div>
+          <div class="info-box">
+            <h4>Variables de Azure App Service</h4>
+            <ul>
+              <li><code>AZURE_STORAGE_ACCOUNT_NAME</code>: Nombre de la cuenta de Storage.</li>
+              <li><code>AZURE_STORAGE_CONTAINER_NAME</code>: <code>promociones</code></li>
+              <li><code>AZURE_STORAGE_BLOB_NAME</code>: <code>mensaje.txt</code></li>
+              <li>Permiso RBAC requerido: <strong>Storage Blob Data Reader</strong> asignado a la System-assigned Managed Identity.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="admin-footer">
+      <p>LUMERA · Panel de Control Administrativo &bull; Reto Azure Bootcamp</p>
+    </footer>
+  </div>
+
+  <script src="/admin.js" defer></script>
+</body>
+</html>
