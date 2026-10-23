@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f8f7f3" />
+  <meta name="description" content="LUMERA, ropa contemporánea para todos los días. Demostración Azure App Service y Blob Storage." />
+  <title>LUMERA — Vestir a tu manera</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="announcement" role="status" aria-live="polite">
+    <span class="announcement-star">✳</span>
+    <span id="promoText">Cargando promociones...</span>
+    <span class="announcement-star">✳</span>
+    <span id="promoSource" class="promo-source" title="Origen del mensaje"></span>
+  </div>
+  <header class="site-header">
+    <div class="site-width nav">
+      <a class="logo" href="#inicio" aria-label="Lumera, volver al inicio">LUMERA<span>✳</span></a>
+      <nav class="desktop-nav" aria-label="Navegación principal">
+        <a href="#coleccion">Nueva colección</a><a href="#coleccion">Comprar</a><a href="#historia">Nosotros</a>
+      </nav>
+      <div class="nav-actions">
+        <button id="searchBtn" class="icon-btn search-btn" aria-label="Buscar productos" title="Buscar productos"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.2"/><path d="m15.5 15.5 5 5"/></svg></button>
+        <button id="cartBtn" class="cart-button" aria-label="Ver bolsa de compras">Mi bolsa <span id="cartCount" class="cart-count">0</span></button>
+      </div>
+    </div>
+  </header>
+  <main id="inicio">
+    <section class="hero site-width" aria-labelledby="heroTitle">
+      <div class="hero-copy">
+        <div class="section-marker"><span class="tiny-line"></span> NUEVA TEMPORADA / 2026</div>
+        <h1 id="heroTitle">Tu estilo.<br/>Tus reglas<span class="accent">.</span></h1>
+        <p>Prendas que combinan contigo, no con las expectativas. Descubre piezas versátiles para vivir todos tus días a tu manera.</p>
+        <a class="primary-link" href="#coleccion">Explorar colección <span aria-hidden="true">↗</span></a>
+        <div class="hero-bottom"><div class="round-avatars" aria-hidden="true"><span>◉</span><span>✺</span><span>✿</span></div><span>Diseñado para moverte a tu ritmo</span></div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-image" role="img" aria-label="Editorial de moda contemporánea"></div>
+        <div class="image-overlay"><span>THE EVERYDAY EDIT</span><strong>01 / 06</strong></div>
+        <div class="floating-sticker" aria-hidden="true">NEW<br/>DROP <span>↗</span></div>
+      </div>
+    </section>
+    <section class="benefits site-width" aria-label="Beneficios">
+      <div><span class="benefit-symbol">✦</span><span><strong>Estilo auténtico</strong><small>Para ser quien quieras</small></span></div>
+      <div><span class="benefit-symbol">↗</span><span><strong>Compra sencilla</strong><small>Elige tus favoritos</small></span></div>
+      <div><span class="benefit-symbol">✳</span><span><strong>Promos en tiempo real</strong><small>Actualizadas desde Azure</small></span></div>
+    </section>
+    <section id="coleccion" class="collection site-width" aria-labelledby="collectionTitle">
+      <div class="collection-header"><div><div class="section-marker">LA SELECCIÓN LUMERA</div><h2 id="collectionTitle">Favoritos de temporada<span>.</span></h2><p>Piezas para usar, combinar y repetir.</p></div><a class="text-link" href="#coleccion">Ver la colección completa <span>↗</span></a></div>
+      <div class="product-controls">
+        <div class="filters" role="group" aria-label="Filtrar colección">
+          <button class="filter active" data-filter="Todos" aria-pressed="true">Todos</button>
+          <button class="filter" data-filter="Mujer" aria-pressed="false">Mujer</button>
+          <button class="filter" data-filter="Hombre" aria-pressed="false">Hombre</button>
+          <button class="filter" data-filter="Unisex" aria-pressed="false">Unisex</button>
+        </div>
+        <label class="search-wrap hidden" id="searchWrap"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Buscar prendas..." aria-label="Buscar prendas" /></label>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+      <div class="catalog-note">Catálogo y precios demostrativos. Este MVP no procesa pagos ni pedidos reales.</div>
+    </section>
+    <section class="story-band" id="historia">
+      <div class="site-width story-inner"><div class="story-ornament">L<span>✳</span></div><div><span class="section-marker light">NUESTRA ESENCIA</span><h2>Lo bueno nunca<br/>pasa de moda.</h2><p>Creemos en prendas que se sienten bien, duran en tu clóset y cuentan tu historia. LUMERA es una experiencia de tienda creada para demostrar servicios cloud de Azure.</p></div><a href="#coleccion" class="story-cta">Encuentra tu estilo ↗</a></div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="site-width footer-inner"><div><div class="logo">LUMERA<span>✳</span></div><p>Tu estilo empieza aquí.</p></div><div class="footer-right"><span>Demo educativa · Azure Bootcamp</span><span>App Service + Blob Storage + Managed Identity</span><span>© 2026 LUMERA</span></div></div></footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="drawerOverlay" class="drawer-overlay hidden"></div>
+  <aside id="cartDrawer" class="cart-drawer" aria-label="Bolsa de compras" aria-hidden="true">
+    <div class="drawer-top"><h2>Mi bolsa <span id="drawerCount">(0)</span></h2><button id="closeCart" class="icon-btn" aria-label="Cerrar bolsa">✕</button></div>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="drawer-bottom"><div class="subtotal">Subtotal <strong id="cartSubtotal">S/ 0.00</strong></div><p>Carrito demostrativo: no se cobran pagos reales.</p><button id="checkoutBtn" class="checkout-btn">Continuar (demo) ↗</button></div>
+  </aside>
+  <script src="/app.js" defer></script>
+</body>
+</html>
