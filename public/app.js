@@ -17,20 +17,33 @@ let cart = [];
 try { const persisted = JSON.parse(localStorage.getItem('lumera-cart-v1') || '[]'); if (Array.isArray(persisted)) cart = persisted.filter(x => Number.isInteger(x) && productos.some(p=>p.id===x)).slice(0,100); } catch { cart = []; }
 let toastTimer;
 
+
 async function loadPromotion() {
   try {
-    const res = await fetch('/api/promocion', { cache: 'no-store' });
-    const data = await res.json();
-    $('promoText').textContent = data.mensaje || 'Descubre nuestra nueva colección';
-    const isLive = res.ok && data.fuente === 'azure-blob';
-    $('promoSource').textContent = isLive ? 'EN VIVO' : 'DEMO';
-    $('promoSource').title = isLive ? 'Mensaje leído desde Azure Blob Storage' : 'Banner de demostración; Blob Storage no está conectado o no respondió';
-  } catch {
-    $('promoText').textContent = 'Descubre nuestra nueva colección';
-    $('promoSource').textContent = 'DEMO';
-    $('promoSource').title = 'Sin conexión a la API';
+    const response = await fetch('/api/promotion', {
+      cache: 'no-store'
+    });
+
+    if (!response.ok) {
+      throw new Error('Promotion unavailable');
+    }
+
+    const data = await response.json();
+
+    if (typeof data.message !== 'string' || !data.message.trim()) {
+      throw new Error('Invalid promotion response');
+    }
+
+    $('promoText').textContent = data.message.trim();
+    $('promoSource').textContent = 'EN VIVO';
+    $('promoSource').title = 'Promoción recibida desde el backend';
+  } catch (error) {
+    $('promoText').textContent = 'Promoción temporalmente no disponible';
+    $('promoSource').textContent = '';
+    console.error('Error al obtener la promoción:', error.message);
   }
 }
+
 function showToast(message) {
   const e = $('toast'); e.textContent = message; e.classList.add('visible');
   clearTimeout(toastTimer); toastTimer=setTimeout(()=>e.classList.remove('visible'), 3000);
