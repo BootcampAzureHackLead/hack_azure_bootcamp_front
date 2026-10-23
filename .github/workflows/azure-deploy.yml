@@ -1,0 +1,79 @@
+# Flujo de trabajo de GitHub Actions para LUMERA
+# Reto Azure Bootcamp · Despliegue en Azure App Service (Node.js)
+
+name: CI/CD · Despliegue en Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Permisos para el workflow
+permissions:
+  contents: read
+
+jobs:
+  # -------------------------------------------------------------
+  # 1. JOB DE VALIDACIÓN Y COMPILACIÓN
+  # -------------------------------------------------------------
+  build:
+    name: Build & Validación (Node.js)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Validar sintaxis del código (npm run check)
+        run: npm run check
+
+      - name: Subir artefacto para despliegue
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app
+          path: .
+
+  # -------------------------------------------------------------
+  # 2. JOB DE DESPLIEGUE A AZURE APP SERVICE
+  # -------------------------------------------------------------
+  deploy:
+    name: Desplegar en Azure App Service
+    needs: build
+    runs-on: ubuntu-latest
+    # Solo desplegar en push a main o disparo manual (no en pull requests)
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Descargar artefacto del job de build
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
+
+      - name: Desplegar en Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          # Nombre del App Service: puedes definirlo en GitHub Repo -> Settings -> Secrets and variables -> Actions -> Variables -> AZURE_WEBAPP_NAME
+          # O reemplazar directamente el valor por defecto a continuación
+          app-name: ${{ vars.AZURE_WEBAPP_NAME || 'lumera-app' }}
+          slot-name: 'Production'
+          # Perfil de publicación descargado desde Azure Portal -> App Service -> 'Descargar perfil de publicación'
+          # Guardado en GitHub Repo -> Settings -> Secrets and variables -> Actions -> Secrets -> AZURE_WEBAPP_PUBLISH_PROFILE
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .
